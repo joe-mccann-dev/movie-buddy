@@ -2,6 +2,7 @@ package com.movie_buddy.moviebuddysinatraport;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,29 +44,39 @@ public class MovieService {
     return movies;
   }
 
-  public List<Object> getMovieDetails(List<Movie> movies) {
-    List<Object> movieDetailsObjects = new ArrayList<>();
+  public List<Movie> getMoviesWithDetails(List<Movie> movies) {
+    List<Movie> moviesWithDetails = new ArrayList<>();
     List<String> movieIDs = new ArrayList<>();
 
     for (Movie movie : movies)
       movieIDs.add(movie.getImdbID());
 
-    Object movieDetailsObject = null;
+    Movie movieWithDetails = null;
     for (String movieID : movieIDs) {
-      movieDetailsObject = getDetailsRequestResponse(movieID);
-      movieDetailsObjects.add(movieDetailsObject);
+      movieWithDetails = getMovieWithDetails(movieID);
+      moviesWithDetails.add(movieWithDetails);
     }
 
-    return movieDetailsObjects;
+    return moviesWithDetails;
   }
 
-  private Object getDetailsRequestResponse(String movieID) {
+  private Movie getMovieWithDetails(String movieID) {
     String detailsURL = getDetailsURL(movieID);
 
     RestTemplate restTemplate = new RestTemplate();
-    Object response = restTemplate.getForObject(detailsURL, Object.class);
+    String response = restTemplate.getForObject(detailsURL, String.class);
 
-    return response;
+    ObjectMapper objectMapper = new ObjectMapper();
+    Movie movie = null;
+    
+    try {
+      JsonNode rootNode = objectMapper.readTree(response);
+      movie = objectMapper.convertValue(rootNode, Movie.class);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    return movie;
 
   }
 
