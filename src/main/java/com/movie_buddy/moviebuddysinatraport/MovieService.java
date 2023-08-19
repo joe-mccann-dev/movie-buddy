@@ -2,7 +2,6 @@ package com.movie_buddy.moviebuddysinatraport;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ public class MovieService {
   @Autowired
   private Environment environment;
 
+  // initial method to gather list of imdbIDs returned from initial get request to omdb
   public List<Movie> getMoviesWithIds(String title, String releaseYear) {
     String externalRequestURL = getRequestURL(title, releaseYear);
 
@@ -33,9 +33,7 @@ public class MovieService {
       JsonNode rootNode = objectMapper.readTree(response);
       JsonNode searchNode = rootNode.get("Search");
 
-      if (searchNode != null && searchNode.isArray())
-        movies = objectMapper.convertValue(searchNode, new TypeReference<List<Movie>>() {
-        });
+      movies = objectMapper.convertValue(searchNode, new TypeReference<List<Movie>>() {});
 
     } catch (IOException e) {
       e.printStackTrace();
@@ -44,6 +42,7 @@ public class MovieService {
     return movies;
   }
 
+  // calls getMovieWithDetails to assemble a collection of movies
   public List<Movie> getMoviesWithDetails(List<Movie> movies) {
     List<Movie> moviesWithDetails = new ArrayList<>();
     List<String> movieIDs = new ArrayList<>();
@@ -60,6 +59,7 @@ public class MovieService {
     return moviesWithDetails;
   }
 
+  // gets details of single movie using movieID
   private Movie getMovieWithDetails(String movieID) {
     String detailsURL = getDetailsURL(movieID);
 
