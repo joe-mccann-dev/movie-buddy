@@ -46,11 +46,13 @@ public class MovieService {
   public List<Object> getMovieDetails(List<Movie> movies) {
     List<Object> movieDetailsObjects = new ArrayList<>();
     List<String> movieIDs = new ArrayList<>();
+
     for (Movie movie : movies)
       movieIDs.add(movie.getImdbID());
 
+    Object movieDetailsObject = null;
     for (String movieID : movieIDs) {
-      Object movieDetailsObject = getDetailsRequestResponse(movieID);
+      movieDetailsObject = getDetailsRequestResponse(movieID);
       movieDetailsObjects.add(movieDetailsObject);
     }
 
@@ -58,9 +60,7 @@ public class MovieService {
   }
 
   private Object getDetailsRequestResponse(String movieID) {
-    String detailsURL = "https://www.omdbapi.com/?apikey=" +
-        environment.getProperty("omdb.api.key") +
-        "&i=" + movieID;
+    String detailsURL = getDetailsURL(movieID);
 
     RestTemplate restTemplate = new RestTemplate();
     Object response = restTemplate.getForObject(detailsURL, Object.class);
@@ -75,5 +75,11 @@ public class MovieService {
     String externalRequestURL = baseURI + searchParams;
 
     return externalRequestURL;
+  }
+
+  private String getDetailsURL(String movieID) {
+    return "https://www.omdbapi.com/?apikey=" +
+        environment.getProperty("omdb.api.key") +
+        "&i=" + movieID;
   }
 }
