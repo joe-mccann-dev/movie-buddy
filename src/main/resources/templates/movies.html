@@ -1,7 +1,31 @@
-<ul>
-  <li th:each="movie : ${movieDetails}">
-    <img class="poster" th:src="${movie.getPoster()}" alt="Movie Poster for ">
-    <p>Title: <span th:text="${movie.getTitle()}"></span></p>
-    <p>Year: <span th:text="${movie.getYear()}"></span></p>
+<ul class="result" th:each="movie : ${movieDetails}">
+  <img class="poster" th:src="${movie.getPoster()}" alt="Movie Poster for ">
+  <li>
+    <ul class="movie-details">
+      <li class="detail">
+        <div class="detail-category">Title</div>
+        <div th:text="${movie.getTitle()}"></div>
+      </li>
+      <li class="detail">
+        <div class="detail-category">Year</div>
+        <div th:text="${movie.getYear()}"></div>
+      </li>
+      <li class="detail">
+        <div class="detail-category">Runtime</div>
+        <div th:text="${movie.getRuntime()}"></div>
+      </li>
+      <li class="detail">
+        <div class="detail-category">Actors</div>
+        <div th:text="${movie.getActors()}"></div>
+      </li>
+      <li class="detail">
+        <div class="detail-category">IMDb rating</div>
+        <div th:text="${movie.getImdbRating()}"></div>
+      </li>
+      <li class="detail">
+        <div class="detail-category">Plot</div>
+        <div th:text="${movie.getPlot()}"></div>
+      </li>
+    </ul>
   </li>
 </ul>
