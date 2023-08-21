@@ -26,9 +26,13 @@ public class MoviesController {
       Model model) {
 
     List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
-    List<Movie> movieDetails = movieService.getMoviesWithDetails(moviesWithIds);
+    List<Movie> movieDetails;
 
-    model.addAttribute("movieDetails", movieDetails);
+    if (moviesWithIds != null) {
+      movieDetails = movieService.getMoviesWithDetails(moviesWithIds);
+      model.addAttribute("moviesFound", !movieDetails.isEmpty());
+      model.addAttribute("movieDetails", movieDetails);
+    }
 
     return "layout";
   }
