@@ -1,6 +1,7 @@
 <ul>
-    <li th:each="movie : ${movieDetails}">
-        <p>Title: <span th:text="${movie.getTitle()}"></span></p>
-        <p>Year: <span th:text="${movie.getYear}"></span></p>
-    </li>
+  <li th:each="movie : ${movieDetails}">
+    <img class="poster" th:src="${movie.getPoster()}" alt="Movie Poster for ">
+    <p>Title: <span th:text="${movie.getTitle()}"></span></p>
+    <p>Year: <span th:text="${movie.getYear()}"></span></p>
+  </li>
 </ul>
