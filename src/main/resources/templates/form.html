@@ -1,0 +1,17 @@
+<div class="form">
+  <form class="form" action="/movies" accept-charset="UTF-8" method="get">
+    <div class="field">
+      <label for="title">title<span class="required">*</span></label>
+      <input required="required" placeholder="Search by title or title contents." type="text" name="title" id="title" minlength="3" maxlength="1000">
+    </div>
+    <div class="field">
+      <label for="releaseYear">release year</label>
+      <input min="1888" max="2023" placeholder="year" type="number" name="releaseYear" id="releaseYear">
+    </div> 
+    <div class="field">
+      <input type="submit" value="Find Movies">
+    </div>  
+    
+  </form>
+</div>
+<hr>

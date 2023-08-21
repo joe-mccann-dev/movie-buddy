@@ -40,6 +40,10 @@ public class Movie {
     return this.title;
   }
 
+  public String getYear() {
+    return this.year;
+  }
+
   public String getRuntime() {
     return this.runtime;
   }

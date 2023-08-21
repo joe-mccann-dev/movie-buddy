@@ -1,0 +1,24 @@
+<div class="container">
+  
+  <div class="credits">
+    <div class="github-logo">
+      <a href="https://github.com/joe-mccann-dev/movie-buddy-java">
+        <img src="../static/images/GitHub-Mark-32px.png" th:src="@{/images/GitHub-Mark-32px.png}" alt="github icon">
+      </a>
+    </div>
+    <div class="myself">
+      <a href="https://joe-mccann.dev">&copy; 2023 Joe McCann</a>
+    </div>
+  </div>
+
+  <h1><a href="/" class="brand">MovieBuddy</a></h1>
+
+  <!-- show form -->
+  <div th:insert="~{form}"></div>
+
+  <div id="loading-spinner">
+    <img src="images/Spinner-1s-200px.gif" alt="loading indicator" />
+  </div>
+
+  <div th:insert="~{movies}" class="results"></div>
+</div>

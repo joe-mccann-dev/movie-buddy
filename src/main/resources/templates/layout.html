@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="stylesheets/style.css" type="text/css" rel="stylesheet">
+  <title>MovieBuddy</title>
+</head>
+<body>
+  <div th:insert="~{main}"></div>
+</body>
+<script>
+  const form = document.querySelector('.form');
+  // const spinner = document.querySelector('#loading-spinner')
+  const results = document.querySelector('.results')
+  // const showLoadingSpinner = () => {
+  //   spinner.style.display = 'block'
+  //   results.style.display = 'none'
+  // }
+  // form.addEventListener("submit", showLoadingSpinner);
+  // prevent spinner from showing if user clicks the browser's 'back' button
+  // window.onpageshow = function(event) {
+  //   if (event.persisted) { spinner.style.display = 'none' }
+  // };
+</script>
+</html>

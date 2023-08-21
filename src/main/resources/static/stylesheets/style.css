@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+
+:root {
+  --slate50: #f8fafc;
+  --slate200: #e2e8f0;
+  --slate600: #475569;
+  --neutral800: #262626;
+  --amber400: #fbbf24;
+  --red500: #ef4444;
+}
+
+html {
+  box-sizing: border-box;
+  background-color: var(--neutral800);
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Lato', sans-serif;
+  padding: 12px;
+  color: var(--neutral800);
+}
+
+.credits {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.github-logo:hover {
+  transform: rotate(-360deg);
+  transition: .4s;
+}
+
+.container {
+  margin-top: 24px;
+  padding: 48px;
+  border: solid var(--amber400) 4px;
+  border-radius: 12px;
+  background-color: var(--slate200);
+  max-height: 720px;
+  flex: 0 1 768px;
+  overflow-y: auto;
+}
+
+.brand {
+  color: var(--neutral800);
+  border-bottom: solid var(--slate600) 4px;
+  padding: 4px;
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 32px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+input {
+  border-radius: 8px;
+  font-size: 0.9rem;
+  padding: 8px 16px;
+  color: var(--slate600);
+  background-color: var(--slate50);
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input[type="text"] {
+  max-width: 300px;
+}
+
+input[type="submit"] {
+  font-weight: 700;
+  flex: 1;
+  width: 100%;
+  min-width: 200px;
+  background-color: var(--slate600);
+  color: var(--slate200);
+  cursor: pointer;
+}
+
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  flex: 1;
+  gap: 4px;
+}
+
+label {
+  font-size: 1.1rem;
+}
+
+.required {
+  color: var(--red500);
+}
+
+#loading-spinner {
+  display: none;
+  text-align: center;
+}
+
+.result {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  align-items: center;
+  padding: 16px 0;
+}
+
+.poster {
+  border-radius: 12px;
+  max-height: 300px;
+  max-width: 200px;
+}
+
+.movie-details {
+  max-width: 400px;
+}
+
+.detail {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.detail-category {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+a {
+  text-decoration: none;
+  color: var(--slate600);
+}
+
+.error {
+  text-align: center;
+  color: var(--slate50);
+  background-color: var(--red500);
+  padding: 12px;
+  font-weight: 700;
+  border-radius: 12px;
+}
+
+@media only screen and (max-width: 450px) {
+  .result { justify-content: center; }
+}

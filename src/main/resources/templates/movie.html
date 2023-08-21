@@ -1,0 +1,38 @@
+<li class="result">
+  <% if result["Poster"] != 'N/A' %>
+    <a href="<%= result["imdb_page"]%>">
+      <img class="poster" src="<%= result["Poster"] %>" alt="Movie Poster for <%= result["Title"] %>">
+    </a>
+  <% else %>
+    <img class="poster" src="https://dummyimage.com/300x425/555/fff.png&text=no+poster+found" alt="Placeholder image">
+  <% end %>
+  <ul class="movie-details">
+    <li class="detail">
+      <div class="detail-category">Title</div>
+      <div>
+        <a href="<%= result["imdb_page"]%>"><%= result["Title"]%></a>
+      </div>
+    </li>
+    <li class="detail">
+      <div class="detail-category">Year</div>
+      <div><%= result["Year"] %></div>
+    </li>
+    <li class="detail">
+      <div class="detail-category">Runtime</div>
+      <div><%= result["Runtime"] %></div>
+    </li>
+    <li class="detail">
+      <div class="detail-category">Actors</div>
+      <div><%= result["Actors"]%></div>
+    </li>
+    <li class="detail">
+      <div class="detail-category">IMDb rating</div>
+      <div><%= result["imdbRating"]%></div>
+    </li>
+    <li class="detail">
+      <div class="detail-category">Plot</div>
+      <div><%= result["Plot"]%></div>
+    </li>
+  </ul>
+</li>
+<hr>

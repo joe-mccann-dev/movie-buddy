@@ -1,31 +1,35 @@
 package com.movie_buddy.moviebuddysinatraport;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RestController
+@Controller
 public class MoviesController {
 
   @Autowired
   private MovieService movieService;
 
   @GetMapping("/")
-  @ResponseBody
-  public ResponseEntity<List<Movie>> getSearchedForMovies(@RequestParam(required = false) String title,
-      @RequestParam(required = false) String releaseYear) {
+  public String home() {
+    return "layout";
+  }
 
+  @GetMapping("/movies")
+  public String getSearchedForMovies(
+      @RequestParam(required = false) String title,
+      @RequestParam(required = false) String releaseYear,
+      Model model) {
 
     List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
     List<Movie> movieDetails = movieService.getMoviesWithDetails(moviesWithIds);
-    
-    
-    return ResponseEntity.ok(movieDetails);
-  }
 
+    model.addAttribute("movieDetails", movieDetails);
+
+    return "layout";
+  }
 }
