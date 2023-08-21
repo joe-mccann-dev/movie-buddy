@@ -20,12 +20,12 @@
     <img src="images/Spinner-1s-200px.gif" alt="loading indicator" />
   </div>
 
-  <div th:if="${moviesFound != null}">
+  <div th:if="${moviesFound}">
     <div th:insert="~{movies}" class="results"></div>
   </div>
 
-  <div th:unless="${moviesFound}">
-    <div th:insert="~{no_movies_found}"></div>
+  <div th:unless="${initialSearch} or ${moviesFound}">
+    <p>No movies found.</p>
   </div>
-  
+
 </div>

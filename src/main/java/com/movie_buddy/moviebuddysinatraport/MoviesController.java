@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -15,7 +16,8 @@ public class MoviesController {
   private MovieService movieService;
 
   @GetMapping("/")
-  public String home() {
+  public String home(Model model) {
+    model.addAttribute("initialSearch", true);
     return "layout";
   }
 
@@ -26,14 +28,13 @@ public class MoviesController {
       Model model) {
 
     List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
-    List<Movie> movieDetails;
+    List<Movie> movieDetails = new ArrayList<>();
 
-    if (moviesWithIds != null) {
+    if (moviesWithIds != null) 
       movieDetails = movieService.getMoviesWithDetails(moviesWithIds);
-      model.addAttribute("moviesFound", !movieDetails.isEmpty());
-      model.addAttribute("movieDetails", movieDetails);
-    }
-
+    
+    model.addAttribute("moviesFound", !movieDetails.isEmpty());
+    model.addAttribute("movieDetails", movieDetails);
     return "layout";
   }
 }
