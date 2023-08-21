@@ -11,17 +11,22 @@
   <div th:insert="~{main}"></div>
 </body>
 <script>
+
   const form = document.querySelector('.form');
-  // const spinner = document.querySelector('#loading-spinner')
+  const spinner = document.querySelector('#loading-spinner')
   const results = document.querySelector('.results')
-  // const showLoadingSpinner = () => {
-  //   spinner.style.display = 'block'
-  //   results.style.display = 'none'
-  // }
-  // form.addEventListener("submit", showLoadingSpinner);
+
+  const showLoadingSpinner = () => {
+    spinner.style.display = 'block'
+    results.style.display = 'none'
+  }
+
+  form.addEventListener("submit", showLoadingSpinner);
   // prevent spinner from showing if user clicks the browser's 'back' button
-  // window.onpageshow = function(event) {
-  //   if (event.persisted) { spinner.style.display = 'none' }
-  // };
+
+  window.onpageshow = function(event) {
+    if (event.persisted) { spinner.style.display = 'none' }
+  };
+  
 </script>
 </html>
