@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 public class MoviesController {
@@ -24,9 +25,9 @@ public class MoviesController {
 
   @GetMapping("/movies")
   public String getSearchedForMovies(
-      @RequestParam(required = false) String title,
+      @RequestParam(required = true) String title,
       @RequestParam(required = false) String releaseYear,
-      Model model) throws IOException {
+      Model model) throws IOException, InterruptedException, ExecutionException {
 
     List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
     List<Movie> movieDetails = new ArrayList<>();
