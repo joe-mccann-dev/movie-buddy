@@ -20,11 +20,11 @@ public class MovieService {
   private Environment environment;
 
   // initial method to gather list of imdbIDs returned from initial get request to omdb
-  public List<Movie> getMoviesWithIds(String title, String releaseYear) {
+  public List<Movie> getMoviesWithIds(String title, String releaseYear) throws IOException {
     String externalRequestURL = getRequestURL(title, releaseYear);
 
-    RestTemplate restTemplate = new RestTemplate();
-    String response = restTemplate.getForObject(externalRequestURL, String.class);
+    RequestHandler requestHandler = new RequestHandler();
+    String response = requestHandler.getAPIResponse(externalRequestURL);
 
     ObjectMapper objectMapper = new ObjectMapper();
     List<Movie> movies = null;

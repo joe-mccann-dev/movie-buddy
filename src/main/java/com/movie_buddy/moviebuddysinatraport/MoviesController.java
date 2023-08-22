@@ -6,6 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MoviesController {
   public String getSearchedForMovies(
       @RequestParam(required = false) String title,
       @RequestParam(required = false) String releaseYear,
-      Model model) {
+      Model model) throws IOException {
 
     List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
     List<Movie> movieDetails = new ArrayList<>();
