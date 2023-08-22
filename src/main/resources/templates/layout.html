@@ -18,7 +18,9 @@
 
   const showLoadingSpinner = () => {
     spinner.style.display = 'block'
-    results.style.display = 'none'
+    if (results) {
+      results.style.display = 'none'
+    }
   }
 
   form.addEventListener("submit", showLoadingSpinner);
