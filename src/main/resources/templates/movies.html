@@ -1,5 +1,18 @@
+<!-- <% if result["Poster"] != 'N/A' %>
+<a href="<%= result["imdb_page"]%>">
+  <img class="poster" src="<%= result["Poster"] %>" alt="Movie Poster for <%= result["Title"] %>">
+</a>
+<% else %>
+<img class="poster" src="https://dummyimage.com/300x425/555/fff.png&text=no+poster+found" alt="Placeholder image">
+<% end %> -->
+
 <ul class="result" th:each="movie : ${movieDetails}">
-  <img class="poster" th:src="${movie.getPoster()}" alt="Movie Poster for ">
+  <a th:if="${movie.getPoster() != 'N/A'}" th:href="${movie.getImdbPage()}">
+    <img class="poster" th:src="${movie.getPoster()}" alt="Movie Poster for ${movie.getTitle()}">
+  </a>
+
+  <img th:if="${movie.getPoster() == 'N/A'}" class="poster" src="https://dummyimage.com/300x425/555/fff.png&text=no+poster+found" alt="Placeholder poster">
+  
   <li>
     <ul class="movie-details">
       <li class="detail">

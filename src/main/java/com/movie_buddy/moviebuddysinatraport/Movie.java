@@ -64,6 +64,14 @@ public class Movie {
     return this.poster;
   }
 
+  // def imdb_page(id)
+  // "https://www.imdb.com/title/#{id}"
+  // end
+
+  public String getImdbPage() {
+    return "https://www.imdb.com/title/" + getImdbID();
+  }
+
   //properties I don't care about, included for simplicity when working with objectMapper
   @JsonProperty("Rated")
   private String rated;
