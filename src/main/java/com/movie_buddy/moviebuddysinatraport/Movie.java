@@ -64,10 +64,6 @@ public class Movie {
     return this.poster;
   }
 
-  // def imdb_page(id)
-  // "https://www.imdb.com/title/#{id}"
-  // end
-
   public String getImdbPage() {
     return "https://www.imdb.com/title/" + getImdbID();
   }
