@@ -3,6 +3,7 @@ package com.movie_buddy.moviebuddysinatraport;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.stereotype.Service;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -12,8 +13,9 @@ import okhttp3.ResponseBody;
 
 // enables an initial synchronous response to get movie ids,
 // enables asynchronous responses via futures
+@Service
 public class RequestHandler {
-  final OkHttpClient client = new OkHttpClient();
+  private final OkHttpClient client = new OkHttpClient();
 
   public String getInitialResponse(String url) throws IOException {
     Request request = new Request.Builder()

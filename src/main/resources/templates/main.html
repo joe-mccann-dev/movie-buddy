@@ -24,7 +24,7 @@
     <div th:insert="~{movies}" class="results"></div>
   </div>
 
-  <div th:unless="${initialSearch} or ${moviesFound}">
+  <div th:unless="${initialSearch} or ${moviesFound} or ${errorMessage}">
     <p>No movies found.</p>
   </div>
 
