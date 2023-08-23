@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.env.Environment;
 
+// TODO mock API responses
+// TODO add test for raised exceptions.
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class MovieBuddySinatraPortApplicationTests {
 
@@ -54,14 +56,15 @@ class MovieBuddySinatraPortApplicationTests {
 
 	@Test
 	void visitingMoviesEndpointWithMissingTitleRendersError() throws Exception {
-		String invalidURL = "http://localhost:" + port + "/movies";
-		String response = requestHandler.getInitialResponse(invalidURL);
+		String missingTitleParamURL = "http://localhost:" + port + "/movies";
+		String response = requestHandler.getInitialResponse(missingTitleParamURL);
 		String expectedErrorMessage = "Required request parameter &#39;title&#39; for method parameter type String is not present";
-		
+
 		assertThat(response).contains(expectedErrorMessage);
 	}
 
 	// Testing RequestHandler
+	// mock
 	@Test
 	void getInitialResponseShouldReturnSearchKeyAndKnownTitle() throws Exception {
 		String sampleTitle = "Casablanca";
@@ -74,6 +77,7 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(this.requestHandler.getInitialResponse(externalRequestURL)).contains("Casablanca");
 	}
 
+	// mock
 	@Test
 	void getDetailedResponseShouldReturnACompletableFuture() throws Exception {
 		String sampleMovieID = "tt0034583";
@@ -90,7 +94,24 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(responseBody).contains("Actors");
 	}
 
+	@Test
+	void getDetailedResponseShouldContainExternalLinkToImdb() throws InterruptedException, ExecutionException {
+		String sampleTitle = "Casablanca";
+		String releaseYear = null;
+		String baseURI = "https://www.omdbapi.com/?apikey=" + environment.getProperty("omdb.api.key");
+		String searchParams = "&s=" + sampleTitle + "&type=movie&y=" + releaseYear;
+		String externalRequestURL = baseURI + searchParams;
+
+		CompletableFuture<String> futureBody = requestHandler.getDetailedResponse(externalRequestURL);
+		String body = futureBody.get();
+		String linkText = "Find more results at IMDb.";
+		
+		assertThat(body.contains(linkText));
+
+	}
+
 	// Testing MovieService
+	// mock
 	@Test
 	void getMoviesWithIdsReturnsNullWhenCalledWithNonsenseTitle() throws IOException {
 		String nonseneseTitle = "ajf239499vjvjzzzzawfdkj";
@@ -98,6 +119,7 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(results).isNull();
 	}
 
+	// mock
 	@Test
 	void getMoviesWithIdsReturnsAListWhenCalledWithAnExistingTitleAndYear() throws IOException {
 		String sampleMovieTitle = "casablanca";
@@ -107,6 +129,7 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(results).isNotEmpty();
 	}
 
+	// mock
 	@Test
 	void getMoviesWithDetailsReturnsAListOfMovieObjects() throws IOException, InterruptedException, ExecutionException {
 		String sampleMovieTitle = "Blue";

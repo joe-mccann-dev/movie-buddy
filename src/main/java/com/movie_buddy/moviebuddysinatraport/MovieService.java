@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class MovieService {
 
+  // @api_limit_reached = initial_response["Error"] == "Request limit reached!"
   @Autowired
   private Environment environment;
 
@@ -34,6 +35,9 @@ public class MovieService {
     try {
       JsonNode rootNode = objectMapper.readTree(response);
       JsonNode searchNode = rootNode.get("Search");
+      
+      if (rootNode.has("Error") && rootNode.get("Error").asText().contains("Request limit reached!"))
+        throw new RequestLimitExceededException();
 
       movies = objectMapper.convertValue(searchNode, new TypeReference<List<Movie>>() {
       });
