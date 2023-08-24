@@ -19,9 +19,9 @@
 	<dependencies>
 
 		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>2.0.2-beta</version>
+			<groupId>com.squareup.okhttp3</groupId>
+			<artifactId>mockwebserver3</artifactId>
+			<version>5.0.0-alpha.11</version>
 		</dependency>
 
 

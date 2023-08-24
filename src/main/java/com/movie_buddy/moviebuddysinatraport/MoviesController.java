@@ -29,11 +29,11 @@ public class MoviesController {
       @RequestParam(required = false) String releaseYear,
       Model model) throws IOException, InterruptedException, ExecutionException {
 
-    List<Movie> moviesWithIds = movieService.getMoviesWithIds(title, releaseYear);
+    List<String> movieIDs = movieService.getMoviesWithIds(title, releaseYear);
     List<Movie> movieDetails = new ArrayList<>();
 
-    if (moviesWithIds != null) 
-      movieDetails = movieService.getMoviesWithDetails(moviesWithIds);
+    if (movieIDs != null) 
+      movieDetails = movieService.getMoviesWithDetails(movieIDs);
     
     model.addAttribute("moviesFound", !movieDetails.isEmpty());
     model.addAttribute("movieDetails", movieDetails);

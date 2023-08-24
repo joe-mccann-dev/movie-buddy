@@ -3,8 +3,10 @@ package com.movie_buddy.moviebuddysinatraport;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -21,60 +23,70 @@ public class MovieService {
   @Autowired
   private Environment environment;
 
+  @Autowired
+  private final RequestHandler requestHandler;
+
+  public MovieService(Environment environment, RequestHandler requestHandler) {
+    this.environment = environment;
+    this.requestHandler = requestHandler;
+  }
+
   // initial method to gather list of imdbIDs returned from initial get request to
   // omdb
-  public List<Movie> getMoviesWithIds(String title, String releaseYear) throws IOException {
+  public List<String> getMoviesWithIds(String title, String releaseYear) throws IOException {
     String externalRequestURL = getRequestURL(title, releaseYear);
-
-    RequestHandler requestHandler = new RequestHandler();
+    RequestHandler requestHandler = this.requestHandler != null ? this.requestHandler : new RequestHandler();
     String response = requestHandler.getInitialResponse(externalRequestURL);
 
     ObjectMapper objectMapper = new ObjectMapper();
     List<Movie> movies = null;
+    List<String> movieIDs = null;
 
     try {
       JsonNode rootNode = objectMapper.readTree(response);
       JsonNode searchNode = rootNode.get("Search");
-      
+
       if (rootNode.has("Error") && rootNode.get("Error").asText().contains("Request limit reached!"))
         throw new RequestLimitExceededException();
 
       movies = objectMapper.convertValue(searchNode, new TypeReference<List<Movie>>() {
       });
 
+      if (movies != null)
+        movieIDs = movies.stream().map(movie -> movie.getImdbID()).collect(Collectors.toList());
+
     } catch (IOException e) {
       e.printStackTrace();
     }
 
-    return movies;
+    return movieIDs;
   }
 
   // calls getMovieWithDetails to assemble a collection of movies
-  public List<Movie> getMoviesWithDetails(List<Movie> movies)
+  public List<Movie> getMoviesWithDetails(List<String> movieIDs)
       throws IOException, InterruptedException, ExecutionException {
-    
-    List<String> movieIDs = new ArrayList<>();
+
     List<CompletableFuture<String>> responseFutures = new ArrayList<>();
     RequestHandler requestHandler = new RequestHandler();
-    Movie movieWithDetails = null;
-    List<Movie> moviesWithDetails = new ArrayList<>();
-    
-    // accumulate ids for processing futures
-    for (Movie movie : movies)
-      movieIDs.add(movie.getImdbID());
 
-    for (String movieID : movieIDs) {
-      String detailsURL = getDetailsURL(movieID);
-      responseFutures.add(requestHandler.getDetailedResponse(detailsURL));
-    }
+    responseFutures = movieIDs.stream()
+        .map(movieID -> {
+          String detailsURL = getDetailsURL(movieID);
+          return requestHandler.getDetailedResponse(detailsURL);
+        })
+        .collect(Collectors.toList());
 
-    // use futures to build movie objects
-    for (CompletableFuture<String> responseFuture : responseFutures) {
-      // waits for response to be available
-      String responseBody = responseFuture.get();
-      movieWithDetails = getMovieWithDetails(responseBody);
-      moviesWithDetails.add(movieWithDetails);
-    }
+    List<Movie> moviesWithDetails = responseFutures.stream()
+        .map(responseFuture -> {
+          try {
+            String responseBody = responseFuture.get();
+            return getMovieWithDetails(responseBody);
+          } catch (InterruptedException | ExecutionException | IOException e) {
+            return null;
+          }
+
+        }).filter(Objects::nonNull)
+        .collect(Collectors.toList());
 
     return moviesWithDetails;
   }
