@@ -66,12 +66,11 @@ public class MovieService {
   }
 
   // calls getMovieWithDetails to assemble a collection of movies
+  // uses async requests via futures and okhttp client
   public List<Movie> getMoviesWithDetails(List<String> movieIDs)
       throws IOException, InterruptedException, ExecutionException {
 
-    List<CompletableFuture<String>> responseFutures = new ArrayList<>();
-    RequestHandler requestHandler = new RequestHandler();
-
+    List<CompletableFuture<String>> responseFutures;
     responseFutures = movieIDs.stream()
         .map(movieID -> {
           String detailsURL = getDetailsURL(movieID);
