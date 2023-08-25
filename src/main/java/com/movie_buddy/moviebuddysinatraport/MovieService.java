@@ -19,15 +19,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Service
 public class MovieService {
 
-  // @api_limit_reached = initial_response["Error"] == "Request limit reached!"
   @Autowired
   private Environment environment;
 
   @Autowired
-  private final RequestHandler requestHandler;
+  private RequestHandler requestHandler;
 
-  public MovieService(Environment environment, RequestHandler requestHandler) {
+  // for 
+  public MovieService(Environment environment) {
     this.environment = environment;
+  }
+
+  // for injecting a mocked request handler
+  public void setRequestHandler(RequestHandler requestHandler) {
     this.requestHandler = requestHandler;
   }
 
@@ -35,7 +39,6 @@ public class MovieService {
   // omdb
   public List<String> getMoviesWithIds(String title, String releaseYear) throws IOException {
     String externalRequestURL = getRequestURL(title, releaseYear);
-    RequestHandler requestHandler = this.requestHandler != null ? this.requestHandler : new RequestHandler();
     String response = requestHandler.getInitialResponse(externalRequestURL);
 
     ObjectMapper objectMapper = new ObjectMapper();

@@ -12,7 +12,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 // enables an initial synchronous response to get movie ids,
-// enables asynchronous responses via futures
+// enables asynchronous responses via futures for parallel requests and increased performance
 @Service
 public class RequestHandler {
   private final OkHttpClient client = new OkHttpClient();

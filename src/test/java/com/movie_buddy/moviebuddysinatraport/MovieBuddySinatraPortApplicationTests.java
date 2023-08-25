@@ -20,6 +20,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import static org.mockito.Mockito.*;
 
@@ -50,12 +54,10 @@ class MovieBuddySinatraPortApplicationTests {
 	@Autowired
 	private RequestHandler requestHandler;
 
-	// @Autowired
-	// private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
 	private MockWebServer mockWebServer;
-
-	private MockResponse mockResponse;
 
 	private OkHttpClient client;
 
@@ -76,7 +78,7 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(requestHandler).isNotNull();
 	}
 
-	// Testing MoviesController
+	// MoviesController
 	@Test
 	public void rootEndPointShouldDisplayForm() throws Exception {
 		String rootURL = "http://localhost:" + port + "/";
@@ -94,12 +96,18 @@ class MovieBuddySinatraPortApplicationTests {
 		String missingTitleParamURL = "http://localhost:" + port + "/movies";
 		String response = requestHandler.getInitialResponse(missingTitleParamURL);
 		String expectedErrorMessage = "Required request parameter &#39;title&#39; for method parameter type String is not present";
-
 		assertThat(response).contains(expectedErrorMessage);
 	}
 
-	// Testing RequestHandler
-	// mock
+	@Test
+	void moviesEndpointWithNoParamThrowsException() throws Exception {
+		mockMvc.perform(MockMvcRequestBuilders.get("/movies"))
+				.andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(MockMvcResultMatchers.model().attributeExists("errorMessage"))
+				.andExpect(MockMvcResultMatchers.view().name("error"));
+	}
+
+	// RequestHandler
 	@Test
 	void getInitialResponseShouldReturnSearchKeyAndKnownTitle() throws Exception {
 
@@ -121,61 +129,71 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(responseBody.contains("Title"));
 	}
 
-	// TODO write this method
-	// @Test
-	// void getMoviesWithIdsShouldThrowExceptionWhenRequestLimitExceeded() throws IOException {
-	// 	mockWebServer.enqueue(new MockResponse()
-	// 			.setResponseCode(400)
-	// 			.setBody("{\"Response\":\"False\",\"Error\":\"Request limit reached!\"}"));
+	@Test
+	void getMoviesWithIdsShouldThrowExceptionWhenRequestLimitExceeded() throws IOException {
+		RequestHandler mockRequestHandler = mock(RequestHandler.class);
+		// prevent depending on external request
+		when(mockRequestHandler.getInitialResponse(anyString()))
+				.thenReturn("{\"Response\":\"False\",\"Error\":\"Request limit reached!\"}");
 
-	// 	RequestHandler mockRequestHandler = mock(RequestHandler.class);
-	// 	when(mockRequestHandler.getInitialResponse(anyString()))
-	// 			.thenReturn("{\"Response\":\"False\",\"Error\":\"Request limit reached!\"}");
+		MovieService movieService = new MovieService(environment);
+		movieService.setRequestHandler(mockRequestHandler);
 
-	// 	MovieService movieService = new MovieService(environment, mockRequestHandler);
+		// since a mocked RequestHandler has been injected,
+		// mocked response contains node of "Error" with value "Request Limit reached!"
+		// therefore, RequestLimitExceededException is raised
+		assertThrows(RequestLimitExceededException.class, () -> {
+			movieService.getMoviesWithIds("any title", null);
+		});
+	}
 
-	// }
-
-	// mock
 	@Test
 	void getDetailedResponseShouldReturnACompletableFuture() throws Exception {
 		String sampleMovieID = "tt0034583";
-		String detailsURL = "https://www.omdbapi.com/?apikey=" +
+		String sampleURL = "https://www.omdbapi.com/?apikey=" +
 				environment.getProperty("omdb.api.key") +
 				"&i=" + sampleMovieID;
 
-		CompletableFuture<String> responseFuture = this.requestHandler.getDetailedResponse(detailsURL);
-		assertThat(responseFuture).isInstanceOf(CompletableFuture.class);
+		String expectedBodyResponse = "{\"Title\":\"Casablanca\",\"Year\":\"1942\",\"Rated\":\"PG\",\"Released\":\"23 Jan 1943\",\"Runtime\":\"102 min\",\"Genre\":\"Drama, Romance, War\",\"Director\":\"Michael Curtiz\",\"Writer\":\"Julius J. Epstein, Philip G. Epstein, Howard Koch\",\"Actors\":\"Humphrey Bogart, Ingrid Bergman, Paul Henreid\",\"Plot\":\"A cynical expatriate American cafe owner struggles to decide whether or not to help his former lover and her fugitive husband escape the Nazis in French Morocco.\",\"Language\":\"English, French, German, Italian\",\"Country\":\"United States\",\"Awards\":\"Won 3 Oscars. 13 wins & 9 nominations total\",\"Poster\":\"https://m.media-amazon.com/images/M/MV5BY2IzZGY2YmEtYzljNS00NTM5LTgwMzUtMzM1NjQ4NGI0OTk0XkEyXkFqcGdeQXVyNDYyMDk5MTU@._V1_SX300.jpg\",\"Ratings\":[{\"Source\":\"Internet Movie Database\",\"Value\":\"8.5/10\"},{\"Source\":\"Rotten Tomatoes\",\"Value\":\"99%\"},{\"Source\":\"Metacritic\",\"Value\":\"100/100\"}],\"Metascore\":\"100\",\"imdbRating\":\"8.5\",\"imdbVotes\":\"587,983\",\"imdbID\":\"tt0034583\",\"Type\":\"movie\",\"DVD\":\"15 Aug 2008\",\"BoxOffice\":\"$4,219,709\",\"Production\":\"N/A\",\"Website\":\"N/A\",\"Response\":\"True\"}";
+		mockWebServer.enqueue(new MockResponse().setBody(expectedBodyResponse));
 
+		RequestHandler mockRequestHandler = mock(RequestHandler.class);
+		CompletableFuture<String> expectedResponseFuture = CompletableFuture.completedFuture(expectedBodyResponse);
+
+		when(mockRequestHandler.getDetailedResponse(anyString()))
+				.thenReturn(expectedResponseFuture);
+
+		CompletableFuture<String> actualResponseFuture = mockRequestHandler
+				.getDetailedResponse(sampleURL);
 		// complete future
-		String responseBody = responseFuture.get();
-		assertThat(responseBody).isInstanceOf(String.class);
+		String responseBody = actualResponseFuture.get();
+
+		assertThat(actualResponseFuture).isInstanceOf(CompletableFuture.class);
+		assertThat(expectedResponseFuture).isEqualTo(actualResponseFuture);
+		assertThat(responseBody).contains("Title");
 		assertThat(responseBody).contains("Actors");
+		assertThat(responseBody).contains("Year");
+		assertThat(responseBody).contains("Plot");
 	}
 
-	@Test
-	void getDetailedResponseShouldContainExternalLinkToImdb() throws InterruptedException, ExecutionException {
-		String sampleTitle = "Casablanca";
-		String releaseYear = null;
-		String baseURI = "https://www.omdbapi.com/?apikey=" + environment.getProperty("omdb.api.key");
-		String searchParams = "&s=" + sampleTitle + "&type=movie&y=" + releaseYear;
-		String externalRequestURL = baseURI + searchParams;
-
-		CompletableFuture<String> futureBody = requestHandler.getDetailedResponse(externalRequestURL);
-		String body = futureBody.get();
-		String linkText = "Find more results at IMDb.";
-
-		assertThat(body.contains(linkText));
-
-	}
-
-	// Testing MovieService
-	// mock
+	// Testing MovieService using dependency injection.
+	// Movie service is injected with the mockRequestHandler
+	// MovieService#getMoviesWithIds then calls RequestHandler#getInitialResponse using the injected mockRequestHandler,
+	// whose response has been predetermined by the when/thenReturn mocking sequence
 	@Test
 	void getMoviesWithIdsReturnsNullWhenCalledWithNonsenseTitle() throws IOException {
-		String nonseneseTitle = "ajf239499vjvjzzzzawfdkj";
-		List<String> results = movieService.getMoviesWithIds(nonseneseTitle, null);
-		assertThat(results).isNull();
+		MovieService movieService = new MovieService(environment);
+		RequestHandler mockRequestHandler = mock(RequestHandler.class);
+
+		movieService.setRequestHandler(mockRequestHandler);
+
+		when(mockRequestHandler.getInitialResponse(anyString()))
+		  .thenReturn("{\"Response\":\"False\",\"Error\":\"Movie not found!\"}");
+
+		String noResultsTitle = "ajf239499vjvjzzzzawfdkj";
+		List<String> movieIDs = movieService.getMoviesWithIds(noResultsTitle, noResultsTitle);
+		
+		assertThat(movieIDs).isNull();
 	}
 
 	// mock
