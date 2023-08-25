@@ -1,4 +1,4 @@
-package com.movie_buddy.moviebuddysinatraport;
+package com.movie_buddy.moviebuddy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,9 +1,10 @@
-package com.movie_buddy.moviebuddysinatraport;
+package com.movie_buddy.moviebuddy;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.stereotype.Service;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;

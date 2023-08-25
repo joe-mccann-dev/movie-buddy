@@ -1,4 +1,4 @@
-package com.movie_buddy.moviebuddysinatraport;
+package com.movie_buddy.moviebuddy;
 
 public class RequestLimitExceededException extends RuntimeException {
   public RequestLimitExceededException() {

@@ -1,4 +1,4 @@
-package com.movie_buddy.moviebuddysinatraport;
+package com.movie_buddy.moviebuddy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,7 +31,7 @@ import okhttp3.Response;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
-class MovieBuddySinatraPortApplicationTests {
+class MovieBuddyApplicationTests {
 
 	@Autowired
 	private Environment environment;

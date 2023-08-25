@@ -1,4 +1,4 @@
-package com.movie_buddy.moviebuddysinatraport;
+package com.movie_buddy.moviebuddy;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.MissingServletRequestParameterException;
