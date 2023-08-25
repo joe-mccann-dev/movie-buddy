@@ -31,7 +31,6 @@ import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import static org.mockito.Mockito.*;
 
-// TODO mock API responses
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 class MovieBuddySinatraPortApplicationTests {
@@ -62,6 +61,7 @@ class MovieBuddySinatraPortApplicationTests {
 	void setup() throws IOException {
 		this.mockWebServer = new MockWebServer();
 		this.mockWebServer.start();
+		this.client = new OkHttpClient();
 	}
 
 	@Test
