@@ -1,18 +1,18 @@
 package com.movie_buddy.moviebuddysinatraport;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,13 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import mockwebserver3.MockResponse;
-import mockwebserver3.MockWebServer;
-import static org.mockito.Mockito.*;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -72,6 +70,7 @@ class MovieBuddySinatraPortApplicationTests {
 	}
 
 	// MoviesController
+	// testing that visiting root path displays text in layout template
 	@Test
 	public void rootEndPointShouldDisplayForm() throws Exception {
 		String rootURL = "http://localhost:" + port + "/";
@@ -84,6 +83,8 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(response).contains("Search by title or title contents");
 	}
 
+	// testing that visiting movies endpoint without title search param displays an
+	// error
 	@Test
 	void visitingMoviesEndpointWithMissingTitleRendersError() throws Exception {
 		String missingTitleParamURL = "http://localhost:" + port + "/movies";
@@ -92,8 +93,9 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(response).contains(expectedErrorMessage);
 	}
 
+	// using MockMvc to test that error message attributes are added to model
 	@Test
-	void moviesEndpointWithNoParamThrowsException() throws Exception {
+	void moviesEndpointWithNoParamAddsErrorAttributeToModel() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/movies"))
 				.andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(MockMvcResultMatchers.model().attributeExists("errorMessage"))
@@ -101,6 +103,9 @@ class MovieBuddySinatraPortApplicationTests {
 	}
 
 	// RequestHandler
+
+	// ensure that initial response has a search key for further processing of
+	// individual movies
 	@Test
 	void getInitialResponseShouldReturnSearchKeyAndKnownTitle() throws Exception {
 
@@ -122,6 +127,8 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(responseBody.contains("Title"));
 	}
 
+	// use mocking and dependency injection to simulate an api key that has maxed
+	// out its request limit
 	@Test
 	void getMoviesWithIdsShouldThrowExceptionWhenRequestLimitExceeded() throws IOException {
 		RequestHandler mockRequestHandler = mock(RequestHandler.class);
@@ -140,6 +147,9 @@ class MovieBuddySinatraPortApplicationTests {
 		});
 	}
 
+	// ensure RequestHandler#getDetailedResponse returns a completable future object
+	// that can be used later by private method MovieService#getMovieWithDetails,
+	// called from the public MovieService#getMoviesWithDetails (plural).
 	@Test
 	void getDetailedResponseShouldReturnACompletableFuture() throws Exception {
 		String sampleMovieID = "tt0034583";
@@ -182,11 +192,13 @@ class MovieBuddySinatraPortApplicationTests {
 				.thenReturn("{\"Response\":\"False\",\"Error\":\"Movie not found!\"}");
 
 		String noResultsTitle = "ajf239499vjvjzzzzawfdkj";
+		// testing internal behavior of MovieService#getMoviesWithIds
 		List<String> movieIDs = movieService.getMoviesWithIds(noResultsTitle, noResultsTitle);
 
 		assertThat(movieIDs).isNull();
 	}
 
+	// ensure a valid request returns a non-empty list of string ids as a response
 	@Test
 	void getMoviesWithIdsReturnsAListWhenCalledWithAnExistingTitleAndYear() throws IOException {
 		MovieService movieService = new MovieService(environment);
@@ -205,6 +217,8 @@ class MovieBuddySinatraPortApplicationTests {
 		assertThat(results).isNotEmpty();
 	}
 
+	// ensure MovieService#getMoviesWithDetails returns a list of movie objects
+	// whose attributes can be later parsed in movies template
 	@Test
 	void getMoviesWithDetailsReturnsAListOfMovieObjects() throws IOException, InterruptedException, ExecutionException {
 		MovieService movieService = new MovieService(environment);
@@ -226,5 +240,4 @@ class MovieBuddySinatraPortApplicationTests {
 
 		assertThat(result).isNotEmpty();
 	}
-
 }
